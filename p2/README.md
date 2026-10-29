@@ -1,74 +1,69 @@
-# Praktikum 02 — Kelas, Objek, dan Enkapsulasi
+# LAPORAN PRAKTIKUM PEMROGRAMAN BERBASIS OBJEK
 
-* **Nama:** Muhammad Farrel Rizky
-* **NPM:** 4525210117
-* **Kelas:** Prak. PBO A Room AI
-* **Dosen Pengampu:** Adi Wahyu Pribadi, S.Si., M.Kom
-
----
-
-## A. Ringkasan Tugas
-Praktikum sesi ini berfokus pada penerapan prinsip **Pemrograman Berorientasi Objek (PBO)** khususnya **Enkapsulasi** dan pemeliharaan **Invariant** (aturan yang harus selalu benar sepanjang siklus hidup objek). Kita mengimplementasikan kelas `Mahasiswa` dalam bahasa **Java** dan **PHP (8.4+)** dengan memastikan validasi data dilakukan di dalam objek itu sendiri, bukan di kelas penguji (`Main` / `main`).
-
----
-
-## B. Penjelasan Perubahan & Pengerjaan TODO (`Mahasiswa.java`)
-
-Berikut adalah rincian perubahan dan alasan teknis pada setiap bagian `TODO` di berkas `Mahasiswa.java`:
-
-1. **TODO 1: Deklarasi Atribut & Immutability**
-   * **Yang Diubah:** Mendeklarasikan `nim` dan `nama` dengan tambahan kata kunci `final`, serta atribut nilai (`nilaiTugas`, `nilaiUts`, `nilaiUas`) sebagai `private`.
-   * **Tujuan:** Menerapkan enkapsulasi penuh dan memastikan NIM bersifat tetap (*immutable*) sesuai invariant bahwa NIM tidak pernah berubah setelah mahasiswa terdaftar. Penggunaan `private` mencegah akses langsung dari luar kelas.
-
-2. **TODO 2: Validasi NIM**
-   * **Yang Diubah:** Menambahkan pengecekan `if (nim == null || nim.trim().isEmpty())` di dalam *constructor*.
-   * **Tujuan:** Menolak data NIM yang kosong atau bernilai `null` sejak awal pembuatan objek, lalu melemparkan `IllegalArgumentException` dengan pesan kesalahan yang spesifik.
-
-3. **TODO 3 & 4: Validasi Komponen Nilai**
-   * **Yang Diubah:** Membuat method pembantu privat `pastikanNilaiSah(String namaKomponen, double nilai)` dan memanggilnya di *constructor* untuk setiap komponen nilai (Tugas, UTS, UAS).
-   * **Tujuan:** Menghindari duplikasi kode (*Dry Principle*). Method ini memastikan setiap nilai berada pada rentang $0 \le \text{nilai} \le 100$. Jika melanggar, objek menolak data tersebut secara langsung pada tahap *runtime*.
-
-4. **TODO 5: Perhitungan Nilai Akhir**
-   * **Yang Diubah:** Mengimplementasikan rumus perhitungan menggunakan konstanta bobot yang sudah disediakan:
-     $$\text{Nilai Akhir} = (\text{Tugas} \times 0.30) + (\text{UTS} \times 0.30) + (\text{UAS} \times 0.40)$$
-   * **Tujuan:** Menjaga kebersihan kode tanpa menulis angka ajaib (*magic numbers*) di dalam method.
-
-5. **TODO 6: Penentuan Huruf Mutu**
-   * **Yang Diubah:** Membuat percabangan kondisi untuk mengonversi nilai akhir menjadi predikat huruf: $\ge 80 \to "A"$, $\ge 70 \to "B"$, $\ge 60 \to "C"$, $\ge 50 \to "D"$, selain itu $"E"$.
-   * **Tujuan:** Menyediakan perilaku bisnis standar akademik yang dikemas rapi di dalam kelas objek.
-
-6. **TODO 7: Penyediaan Getter**
-   * **Yang Diubah:** Menambahkan *getter* untuk atribut yang diperlukan (`getNim()`, `getNama()`, dll.) **tanpa** membuat method *setter* untuk `nim`.
-   * **Tujuan:** Melindungi integritas data (*read-only access*) dari dunia luar.
+| Informasi Praktikan | Keterangan |
+| :--- | :--- |
+| *Nama* | Muhammad Farrel Rizky |
+| *NPM* | 4525210117 |
+| *Kelas* | Prak. PBO A Room AI |
+| *Mata Kuliah* | Pemrograman Berbasis Objek (PBO) |
+| *Pertemuan* | Pertemuan 02 - Kelas, Objek, dan Enkapsulasi |
+| *Tanggal* | 10/09/2026 |
 
 ---
 
-## C. Penjelasan Perubahan & Pengerjaan TODO (`Mahasiswa.php`)
+## 1. Implementasi Java
 
-Penyesuaian pada versi PHP (`Mahasiswa.php`) menggunakan standar fitur modern PHP 8.4+:
-* **Constructor Property Promotion & Readonly:** Atribut `nim` dan `nama` dideklarasikan langsung di dalam parameter *constructor* menggunakan kata kunci `private readonly`, yang bertindak sebagai padanan kata kunci `final` pada Java.
-* **Strict Types:** Menggunakan `declare(strict_types=1);` di baris pertama agar PHP tidak melakukan konversi tipe data implisit secara diam-diam.
-* **Match Expression:** Pada penentuan huruf mutu, digunakan ekspresi `match (true)` agar kode lebih bersih, ekspresif, dan mudah dibaca dibandingkan `if-else` bertumpuk.
+### 1.1. File: Mahasiswa.java
+*Penjelasan Kode:*
+> Kelas `Mahasiswa` menerapkan prinsip **Enkapsulasi** dan pemeliharaan **Invariant** (aturan yang harus selalu benar sepanjang siklus hidup objek). Atribut `nim` dan `nama` dideklarasikan dengan kata kunci `final` agar bersifat *immutable* setelah diinisialisasi, sementara atribut nilai (`nilaiTugas`, `nilaiUts`, `nilaiUas`) bersifat `private`. Validasi ketat diterapkan di dalam *constructor* untuk menolak NIM kosong atau nilai di luar rentang $0 \le \text{nilai} \le 100$ menggunakan eksepsi `IllegalArgumentException`. Perhitungan nilai akhir menggunakan bobot terstruktur serta konversi predikat huruf mutu dikemas secara aman di dalam kelas ini.
+
+*Bukti Eksekusi (Screenshot):*
+- *Before* (Kondisi awal / Kesalahan kompilasi atau kode belum lengkap):
+![SS Before Mahasiswa.java](images/mahasiswajava-sebelum.png)
+
+- *After* (Kondisi akhir / Eksekusi berhasil):
+![SS After Mahasiswa.java](images/mahasiswajava-setelah.png)
+
+### 1.2. File: Main.java
+*Penjelasan Kode:*
+> Kelas `Main` berfungsi sebagai titik masuk eksekusi (*entry point*) utama pada program Java untuk menguji instansiasi objek `Mahasiswa`, pengujian penanganan validasi data yang tidak sah, serta menampilkan hasil perhitungan nilai akhir beserta huruf mutu ke konsol.
+
+*Bukti Eksekusi (Screenshot):*
+- *Before* (Kondisi awal / Kesalahan kompilasi atau uji coba awal):
+![SS Before Main.java](images/mainjava-sebelum.png)
+
+- *After* (Kondisi akhir / Eksekusi berhasil):
+![SS After Main.java](images/mainjava-setelah.png)
+
+### Output
+*Output Program Java:*
+![Output Program Java](images/runningprogramjava-setelah.png)
 
 ---
 
-## D. Hasil Pengujian Program (Running)
+## 2. Implementasi PHP
 
-Berikut adalah bukti hasil eksekusi program uji setelah seluruh `TODO` diselesaikan:
+### 2.1. File: Mahasiswa.php
+*Penjelasan Kode:*
+> Kelas `Mahasiswa` pada PHP mengadopsi standar modern PHP 8.4+ dengan memanfaatkan fitur *Constructor Property Promotion* dan kata kunci `private readonly` untuk menjaga sifat *immutable* pada atribut `nim` dan `nama`. Penggunaan `declare(strict_types=1);` memastikan pemeriksaan tipe data dilakukan secara ketat. Validasi data serta ekspresi `match (true)` diterapkan untuk penentuan huruf mutu secara bersih dan ekspresif.
 
-### 1. Java
-* **Sebelum Perbaikan:** 
-  > ![Screenshot Hasil Running Java Sebelum](images/runningprogramjava-sebelum.png)
-* **Sesudah Perbaikan:**
-  > ![Screenshot Hasil Running Java Setelah](images/runningprogramjava-setelah.png)
+*Bukti Eksekusi (Screenshot):*
+- *Before* (Kondisi awal / Galat logika atau kerangka awal):
+![SS Before Mahasiswa.php](images/mahasiswaphp-sebelum.png)
 
-### 2. PHP
-* **Sebelum Perbaikan:** 
-  > ![Screenshot Hasil Running PHP Sebelum](images/runningprogramphp-sebelum.png)
-* **Sesudah Perbaikan:**
-  > ![Screenshot Hasil Running PHP Setelah](images/runningprogramphp-setelah.png)
+### 2.2. File: main.php
+*Penjelasan Kode:*
+> Berkas `main.php` bertindak sebagai *driver script* untuk menguji perilaku kelas `Mahasiswa` versi PHP, memastikan mekanisme enkapsulasi, validasi parameter, dan kalkulasi akademik berjalan sesuai spesifikasi rancangan.
+
+*Bukti Eksekusi (Screenshot):*
+- *Before* (Kondisi awal / Galat logika):
+![SS Before main.php](images/mainphp-sebelum.png)
+
+### Output
+*Output Program PHP:*
+![Output Program PHP](images/runningprogramphp-setelah.png)
 
 ---
 
-## E. Kesimpulan
-Melalui praktikum Sesi 02 ini, dapat disimpulkan bahwa penerapan enkapsulasi dan pengelolaan *invariant* yang benar di dalam kelas (*constructor* dan *method* internal) sangat penting untuk menjaga keabsahan data objek sejak pertama kali diciptakan. Objek kini mampu menolak data yang tidak sah (seperti nilai di luar rentang 0–100 atau NIM kosong) serta melindungi atribut tetap (*immutable*) dari modifikasi luar secara aman, baik pada bahasa Java maupun PHP.
+## 3. Kesimpulan
+> Praktikum Pertemuan 02 ini berhasil membuktikan pentingnya penerapan prinsip **Enkapsulasi** dan pengelolaan **Invariant** secara mandiri di dalam kelas (*constructor* serta *method* internal). Dengan menyembunyikan data di balik tingkat akses `private` / `readonly` / `final` serta menyematkan validasi di dalam objek itu sendiri, program mampu menolak data yang tidak sah (seperti nilai di luar rentang 0–100 atau NIM kosong) sejak tahap *runtime* pertama kali objek diciptakan. Hal ini memastikan integritas data tetap terjaga secara konsisten, baik pada implementasi bahasa **Java** maupun **PHP**.

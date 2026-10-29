@@ -1,78 +1,81 @@
-# Praktikum 03 — Constructor, Anggota Statis, dan Konstanta
+# LAPORAN PRAKTIKUM PEMROGRAMAN BERBASIS OBJEK
 
-- **Nama:** Muhammad Farrel Rizky
-- **NPM:** 4525210117
-- **Kelas:** Prak. PBO A Room AI
-- **Dosen Pengampu:** Adi Wahyu Pribadi, S.Si., M.Kom
-
----
-
-## A. Ringkasan Tugas
-Praktikum sesi ini berfokus pada pemahaman siklus hidup objek, penerapan **Constructor Overloading** dengan teknik **Delegasi Constructor** (`this(...)` di Java / *default parameter* di PHP), pemanfaatan anggota statis (`static`) untuk data yang melekat pada kelas, serta penggunaan konstanta (`static final` / `const`) guna menghindari *"magic numbers"* (angka ajaib). Kita mengimplementasikan kelas `RekeningBank` dalam bahasa **Java** dan **PHP (8.4+)**.
-
----
-
-## B. Penjelasan Perubahan & Pengerjaan TODO (`RekeningBank.java`)
-
-Berikut adalah rincian perubahan dan alasan teknis pada setiap bagian `TODO` di berkas `RekeningBank.java`:
-
-1. **TODO 1: Penggunaan Konstanta (Menghindari Angka Ajaib)**
-   * **Yang Diubah:** Mendefinisikan konstanta `public static final double BUNGA_TAHUNAN = 0.025;`, `BIAYA_ADMIN = 5000;`, dan `BATAS_PENARIKAN = 5000000;`.
-   * **Tujuan:** Menghindari angka literal yang tersebar di dalam method (*magic numbers*), sehingga memudahkan pemeliharaan kode jika ada perubahan kebijakan bisnis (misalnya persentase bunga atau biaya admin diubah).
-
-2. **TODO 2: Deklarasi Field Statis (Penghitung Objek)**
-   * **Yang Diubah:** Menambahkan atribut privat statis `private static int jumlahRekening = 0;`.
-   * **Tujuan:** Menyediakan penghitung global yang dibagikan ke seluruh instance kelas untuk melacak total objek `RekeningBank` yang berhasil dibuat.
-
-3. **TODO 3 & 4: Delegasi Constructor & Validasi Terpusat**
-   * **Yang Diubah:** Mengubah *constructor* ringkas (dua parameter) agar mendelegasikan pembuatannya ke *constructor* lengkap menggunakan `this(nomor, pemilik, 0);`. Validasi untuk mendeteksi nomor rekening kosong dan saldo awal negatif dipusatkan hanya di dalam *constructor* lengkap.
-   * **Tujuan:** Menerapkan prinsip DRY (*Don't Repeat Yourself*). Duplikasi aturan validasi dihilangkan sehingga aturan hanya perlu diubah di satu tempat jika diperlukan.
-
-4. **TODO 5: Inkrementasi Penghitung Objek**
-   * **Yang Diubah:** Menambahkan baris `jumlahRekening++;` **hanya** di dalam *constructor* lengkap.
-   * **Tujuan:** Karena *constructor* ringkas melakukan delegasi ke *constructor* lengkap, penambahan jumlah rekening tidak akan dihitung dua kali secara keliru.
-
-5. **TODO 6 & 7: Validasi Transaksi (Setor & Tarik)**
-   * **Yang Diubah:** Menambahkan validasi pada method `setor()` (menolak nilai $\le 0$) serta method `tarik()` (menolak nilai $\le 0$, menolak jika melebihi saldo, dan menolak jika melebihi batas penarikan sekali transaksi).
-   * **Tujuan:** Menjaga keabsahan transaksi dan menegakkan *invariant* saldo tidak boleh bernilai negatif serta kepatuhan terhadap batas maksimal penarikan.
-
-6. **TODO 8: Pemotongan Biaya Admin**
-   * **Yang Diubah:** Mengimplementasikan pemotongan saldo sebesar `BIAYA_ADMIN` dengan pengecekan agar saldo akhir tidak menjadi kurang dari nol.
-   * **Tujuan:** Memastikan konsistensi keuangan akun sesuai aturan bisnis.
-
-7. **TODO 9 & 10: Pembuatan Method Statis**
-   * **Yang Diubah:** Membuat method statis `getJumlahRekening()` untuk mengembalikan nilai penghitung, dan method utilitas statis `bungaSetahun(double pokok)` untuk menghitung proyeksi bunga tahunan tanpa terikat pada instansiasi objek tertentu.
-   * **Tujuan:** Membedakan dengan jelas antara perilaku yang melekat pada konteks *instance* (objek) versus konteks *class* (statis).
+| Informasi Praktikan | Keterangan |
+| :--- | :--- |
+| *Nama* | Muhammad Farrel Rizky |
+| *NPM* | 4525210117 |
+| *Kelas* | A |
+| *Mata Kuliah* | Pemrograman Berbasis Objek (PBO) |
+| *Pertemuan* | Pertemuan 03 - Constructor, Anggota Statis, dan Konstanta |
+| *Tanggal* | 17/09/2026 |
 
 ---
 
-## C. Penjelasan Perubahan & Pengerjaan TODO (`RekeningBank.php`)
+## 1. Implementasi Java
 
-Penyesuaian pada versi PHP (`RekeningBank.php`) mengadaptasi karakteristik bahasa PHP modern (8.4+):
-- **Konstanta Kelas:** Memanfaatkan keyword `public const` untuk mendefinisikan konstanta seperti `BUNGA_TAHUNAN`, `BIAYA_ADMIN`, dan `BATAS_PENARIKAN`.
-- **Padanan Overloading:** Karena PHP tidak mendukung *constructor overloading* secara langsung, digunakan *default parameter* pada constructor utama (`float $saldoAwal = 0`).
-- **Named Constructor:** Mengimplementasikan *static factory method* `rekeningPelajar()` yang menggunakan `new static()` (*late static binding*) agar fleksibel apabila kelas ini nantinya diturunkan (*inheritance*).
-- **Pengecekan Tipe & Exception:** Menggunakan `declare(strict_types=1);` serta melempar `InvalidArgumentException` dan `RuntimeException` saat terjadi pelanggaran aturan validasi.
+### 1.1. File: RekeningBank.java
+*Penjelasan Kode:*
+> Kelas `RekeningBank` menerapkan pengelolaan siklus hidup objek melalui **Constructor Overloading** dan **Delegasi Constructor** (`this(...)`). Konstanta global (`BUNGA_TAHUNAN`, `BIAYA_ADMIN`, `BATAS_PENARIKAN`) didefinisikan menggunakan `public static final` untuk menghindari *magic numbers*. Selain itu, atribut statis `jumlahRekening` digunakan untuk melacak total instansiasi objek secara terpusat, lengkap dengan validasi transaksi (`setor`, `tarik`) serta aturan pemotongan biaya admin.
+
+*Bukti Eksekusi (Screenshot):*
+- *Before* (Kondisi awal / Kesalahan kompilasi atau kode belum lengkap):
+![SS Before RekeningBank.java](images/rekeningbankjava-sebelum.png)
+
+- *After* (Kondisi akhir / Eksekusi berhasil):
+![SS After RekeningBank.java](images/rekeningbankjava-setelah.png)
+
+### 1.2. File: Main.java
+*Penjelasan Kode:*
+> Kelas `Main` bertindak sebagai titik masuk (*entry point*) utama untuk menguji instansiasi objek `RekeningBank` dengan berbagai variasi *constructor*, pengujian validasi transaksi penyetoran dan penarikan, serta pemanggilan *method* statis seperti `getJumlahRekening()` dan `bungaSetahun()`.
+
+*Bukti Eksekusi (Screenshot):*
+- *Before* (Kondisi awal / Pengujian awal):
+![SS Before Main.java](images/mainjava-sebelum.png)
+
+- *After* (Kondisi akhir / Eksekusi berhasil):
+![SS After Main.java](images/mainjava-setelah.png)
+
+### Output
+*Output Program Java:*
+- *Sebelum Perbaikan:*
+![Output Java Sebelum](images/runningprogramjava-sebelum.png)
+- *Sesudah Perbaikan:*
+![Output Java Setelah](images/runningprogramjava-setelah.png)
 
 ---
 
-## D. Hasil Pengujian Program (Running)
+## 2. Implementasi PHP
 
-Berikut adalah bukti hasil eksekusi program uji setelah seluruh `TODO` diselesaikan:
+### 2.1. File: RekeningBank.php
+*Penjelasan Kode:*
+> Kelas `RekeningBank` pada PHP diimplementasikan dengan memanfaatkan fitur modern PHP 8.4+. Karena PHP tidak mendukung *constructor overloading* secara langsung, digunakan *default parameter* pada *constructor* utama. Konstanta kelas didefinisikan menggunakan kata kunci `public const`, serta dilengkapi *static factory method* (`rekeningPelajar()`) dan mekanisme penanganan eksepsi yang ketat.
 
-### 1. Java
-* **Sebelum Perbaikan:** 
-  > ![Screenshot Hasil Running Java Sebelum](images/runningprogramjava-sebelum.png)
-* **Sesudah Perbaikan:**
-  > ![Screenshot Hasil Running Java Setelah](images/runningprogramjava-setelah.png)
+*Bukti Eksekusi (Screenshot):*
+- *Before* (Kondisi awal / Kerangka awal atau galat logika):
+![SS Before RekeningBank.php](images/rekeningbankphp-sebelum.png)
 
-### 2. PHP
-* **Sebelum Perbaikan:** 
-  > ![Screenshot Hasil Running PHP Sebelum](images/runningprogramphp-sebelum.png)
-* **Sesudah Perbaikan:**
-  > ![Screenshot Hasil Running PHP Setelah](images/runningprogramphp-setelah.png)
+- *After* (Kondisi akhir / Eksekusi berhasil):
+![SS After RekeningBank.php](images/rekeningbankphp-setelah.png)
+
+### 2.2. File: main.php
+*Penjelasan Kode:*
+> Berkas `main.php` berfungsi sebagai *driver script* untuk menguji perilaku kelas `RekeningBank` versi PHP, memastikan fungsionalitas pembuatan rekening, simulasi setor/tarik saldo, dan pemanggilan method statis berjalan dengan benar.
+
+*Bukti Eksekusi (Screenshot):*
+- *Before* (Kondisi awal / Pengujian awal):
+![SS Before main.php](images/mainphp-sebelum.png)
+
+- *After* (Kondisi akhir / Eksekusi berhasil):
+![SS After main.php](images/mainphp-setelah.png)
+
+### Output
+*Output Program PHP:*
+- *Sebelum Perbaikan:*
+![Output PHP Sebelum](images/runningprogramphp-sebelum.png)
+- *Sesudah Perbaikan:*
+![Output PHP Setelah](images/runningprogramphp-setelah.png)
 
 ---
 
-## E. Kesimpulan
-Melalui praktikum Sesi 03 ini, kita mempelajari pentingnya mengelola siklus hidup objek secara benar. Penerapan **delegasi constructor** efektif mencegah duplikasi kode validasi. Penggunaan **anggota statis** (`static`) memungkinkan pengelolaan data lintas objek secara terpusat (seperti pencatatan jumlah total rekening), sementara **konstanta** membersihkan kode dari ketergantungan pada angka ajaib (*magic numbers*) yang rawan kesalahan.
+## 3. Kesimpulan
+> Praktikum Pertemuan 03 ini berhasil membuktikan pentingnya pemahaman siklus hidup objek, penerapan **delegasi constructor** untuk mencegah duplikasi kode validasi, serta pemanfaatan **anggota statis** (`static`) guna mengelola data lintas objek secara terpusat. Penggunaan **konstanta** juga efektif membersihkan kode dari ketergantungan pada angka ajaib (*magic numbers*), sehingga aturan bisnis (seperti batas penarikan, suku bunga, dan biaya admin) menjadi lebih mudah dipelihara pada bahasa Java maupun PHP.

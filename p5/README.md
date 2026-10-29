@@ -1,83 +1,145 @@
-# Praktikum 05 — Polimorfisme
+# LAPORAN PRAKTIKUM PEMROGRAMAN BERBASIS OBJEK
 
-- **Nama:** Muhammad Farrel Rizky
-- **NPM:** 4525210117
-- **Kelas:** Prak. PBO A Room AI
-- **Dosen Pengampu:** Adi Wahyu Pribadi, S.Si., M.Kom
-
----
-
-## A. Ringkasan Tugas
-Praktikum sesi ini berfokus pada penerapan konsep **Polimorfisme** dalam **Pemrograman Berorientasi Objek (PBO)** menggunakan bahasa **Java** dan **PHP (8.4+)**. Polimorfisme memungkinkan objek dari kelas turunan yang berbeda untuk merespons pemanggilan *method* yang sama melalui antarmuka atau kelas induk (*parent class*) dengan cara mereka masing-masing (*dynamic method dispatch*). Kita mempelajari bagaimana menghilangkan *anti-pattern* pemeriksaan tipe manual (`instanceof` atau `switch-case`) dan menggantinya dengan struktur polimorfik yang memenuhi prinsip *Open/Closed Principle* (OCP).
-
----
-
-## B. Penjelasan Penambahan File & Pengerjaan TODO (Java)
-
-Dalam pengerjaan modul Java, beberapa kelas dasar telah disediakan, namun kita perlu melengkapi kelas turunan yang ada serta membuat beberapa **file baru** agar program utama (`Main.java`) dapat berjalan sesuai aturan kontrak polimorfisme tanpa mengubah logika perulangannya.
-
-Berikut adalah rincian file yang dikerjakan beserta alasan teknis penambahan file baru:
-
-1. **Penyelesaian `Lingkaran.java` & `Persegi.java`**
-   * **Yang Dikerjakan:** Menambahkan validasi invariant di *constructor* (menolak nilai $\le 0$ dengan melemparkan `IllegalArgumentException`) serta mengimplementasikan method abstrak `luas()` dan `keliling()` menggunakan formula matematika yang akurat (menggunakan `Math.PI` untuk lingkaran).
-   * **Tujuan:** Memastikan setiap kelas turunan mematuhi kontrak yang ditetapkan oleh kelas abstrak induk (`BangunDatar`).
-
-2. **Pembuatan File Baru: `Segitiga.java`**
-   * **Alasan Pembuatan File Baru:** Diperlukan untuk memenuhi *TODO Langkah 2* di `Main.java` yang menguji penambahan jenis bangun datar baru ke dalam array `BangunDatar[]`.
-   * **Implementasi:** Kelas ini memperluas `BangunDatar` dengan menerima parameter alas, tinggi, dan sisi miring, serta menghitung luas segitiga ($0.5 \times \text{alas} \times \text{tinggi}$) dan kelilingnya secara mandiri.
-
-3. **Pembuatan File Baru: `Trapesium.java`**
-   * **Alasan Pembuatan File Baru:** Diperlukan untuk memenuhi *TODO Langkah 4* di `Main.java` guna menguji perluasan hierarki kelas lebih lanjut.
-   * **Implementasi:** Menerapkan perhitungan luas trapesium berdasarkan jumlah sisi sejajar dikali tinggi dibagi dua, serta menjumlahkan seluruh sisinya untuk mendapatkan keliling.
-
-4. **Pembuatan File Baru: `AntiPatternRefaktor.java` (Langkah 5)**
-   * **Alasan Pembuatan File Baru:** Untuk menjawab tantangan Langkah 5 guna membandingkan pendekatan buruk (*anti-pattern*) yang menggunakan `instanceof` dengan pendekatan polimorfik murni menggunakan antarmuka (`interface`) atau kelas abstrak.
+| Informasi Praktikan | Keterangan |
+| :--- | :--- |
+| *Nama* | Muhammad Farrel Rizky |
+| *NPM* | 4525210117 |
+| *Kelas* | Prak. PBO A Room AI |
+| *Mata Kuliah* | Pemrograman Berbasis Objek (PBO) |
+| *Pertemuan* | Praktikum 05 — Polimorfisme |
+| *Tanggal* | 01/10/2026 |
 
 ---
 
-## C. Analisis Perbandingan: Anti-Pattern vs Polimorfisme (Langkah 5)
+## 1. Implementasi Java
 
-Berdasarkan analisis terhadap berkas `AntiPattern.java` dan hasil refaktornya, berikut adalah jawaban atas pertanyaan pemandu praktikum:
+### 1.1. File: BangunDatar.java
+*Penjelasan Kode:*
+> Kelas abstrak `BangunDatar` berfungsi sebagai kelas induk universal yang mendefinisikan kontrak method abstrak `luas()` dan `keliling()`. Validasi invariant diterapkan di dalam *constructor* untuk memastikan parameter nilai dasar tidak bernilai negatif atau nol.
 
-1. **Berapa baris yang harus disunting untuk menambah satu bangun datar baru?**
-   * *Versi Anti-Pattern (`AntiPattern.java`):* Kita harus memodifikasi method `hitungLuas(Object bangun)` dengan menambahkan cabang `else if (bangun instanceof BangunBaru)` dan membuat struktur rekaman (*record*) baru. Jika ada 5 fungsi serupa di seluruh basis kode, maka 5 tempat berbeda harus disunting.
-   * *Versi Polimorfik (`AntiPatternRefaktor.java` / `Main.java`):* **0 baris kode yang ada yang disunting.** Kita hanya perlu membuat kelas baru yang mewarisi `BangunDatar` (atau mengimplementasikan *interface*), sehingga kode pemanggil (*main loop*) tetap bersih tanpa perubahan sama sekali (*Open/Closed Principle*).
+*Bukti Eksekusi (Screenshot):*
+- *Before* (Kondisi awal / Kesalahan kompilasi):
+![SS Before BangunDatar.java](images/bangundatarjava-sebelum.png)
 
-2. **Apa yang terjadi jika seseorang lupa menambahkan satu cabang `else-if`?**
-   * Program akan lolos saat kompilasi, namun ketika dijalankan (*runtime*), objek baru tersebut akan jatuh ke blok `throw new IllegalArgumentException(...)`, menyebabkan aplikasi *crash* atau kegagalan bisnis yang sulit dilacak.
+- *After* (Kondisi akhir / Eksekusi berhasil):
+![SS After BangunDatar.java](images/bangundatarjava-setelah.png)
 
-3. **Di mana pengetahuan "cara menghitung luas" SEHARUSNYA berada?**
-   * Pengetahuan tersebut seharusnya berada di dalam masing-masing kelas objek bangun datar itu sendiri (enkapsulasi perilaku), bukan terpusat dalam struktur percabangan kondisional di kelas penguji atau utilitas luar.
+### 1.2. File: Lingkaran.java
+*Penjelasan Kode:*
+> Kelas `Lingkaran` mengimplementasikan kelas abstrak `BangunDatar` dengan menambahkan atribut radius serta menghitung luas ($\pi \times r^2$) dan keliling ($2 \times \pi \times r$) menggunakan konstanta `Math.PI`.
+
+*Bukti Eksekusi (Screenshot):*
+- *Before* (Kondisi awal / Kesalahan kompilasi):
+![SS Before Lingkaran.java](images/lingkaranjava-sebelum.png)
+
+- *After* (Kondisi akhir / Eksekusi berhasil):
+![SS After Lingkaran.java](images/lingkaranjava-setelah.png)
+
+### 1.3. File: Persegi.java
+*Penjelasan Kode:*
+> Kelas `Persegi` memperluas `BangunDatar` untuk menghitung luas dan keliling bidang persegi berdasarkan panjang sisi yang tervalidasi.
+
+*Bukti Eksekusi (Screenshot):*
+- *Before* (Kondisi awal / Kesalahan kompilasi):
+![SS Before Persegi.java](images/persegijava-sebelum.png)
+
+- *After* (Kondisi akhir / Eksekusi berhasil):
+![SS After Persegi.java](images/persegijava-setelah.png)
+
+### 1.4. File: Segitiga.java
+*Penjelasan Kode:*
+> Kelas `Segitiga` merupakan file baru turunan `BangunDatar` yang dibuat untuk menguji fleksibilitas polimorfisme saat menambahkan bentuk geometri baru tanpa mengubah struktur kode utama.
+
+*Bukti Eksekusi (Screenshot):*
+- *After* (Kondisi akhir / Eksekusi berhasil):
+![SS After Segitiga.java](images/segitigajava-setelah.png)
+
+### 1.5. File: Trapesium.java
+*Penjelasan Kode:*
+> Kelas `Trapesium` adalah file turunan baru yang mengimplementasikan perhitungan geometri khusus trapesium (luas dan keliling) sebagai bentuk penerapan *Open/Closed Principle*.
+
+*Bukti Eksekusi (Screenshot):*
+- *After* (Kondisi akhir / Eksekusi berhasil):
+![SS After Trapesium.java](images/trapesiumjava-setelah.png)
+
+### 1.6. File: AntiPattern.java & AntiPatternRefaktor.java
+*Penjelasan Kode:*
+> Berkas `AntiPattern.java` mengilustrasikan kode buruk yang menggunakan pemeriksaan tipe manual (`instanceof`). Berkas ini kemudian direfaktor menjadi `AntiPatternRefaktor.java` untuk menerapkan polimorfisme murni berbasis *dynamic method dispatch*.
+
+*Bukti Eksekusi (Screenshot):*
+- *Before AntiPattern.java* (Kondisi awal):
+![SS Before AntiPattern.java](images/antipatternjava-sebelum.png)
+
+- *After AntiPattern.java* (Kondisi akhir):
+![SS After AntiPattern.java](images/antipatternjava-setelah.png)
+
+- *After AntiPatternRefaktor.java* (Kondisi akhir hasil refaktor):
+![SS After AntiPatternRefaktor.java](images/antipatternrefaktorjava-setelah.png)
+
+### 1.7. File: Main.java
+*Penjelasan Kode:*
+> Berkas `Main.java` bertindak sebagai titik masuk eksekusi (*entry point*) utama untuk menguji koleksi objek bangun datar secara polimorfik melalui perulangan array `BangunDatar[]`.
+
+*Bukti Eksekusi (Screenshot):*
+- *Before* (Kondisi awal / Kesalahan kompilasi):
+![SS Before Main.java](images/mainjava-sebelum.png)
+
+- *After* (Kondisi akhir / Eksekusi berhasil):
+![SS After Main.java](images/mainjava-setelah.png)
+
+### Output
+*Output Program Java:*
+- *Before:* ![Output Java Sebelum](images/runningprogramjava-sebelum.png)
+- *After:* ![Output Java Setelah](images/runningprogramjava-setelah.png)
 
 ---
 
-## D. Implementasi PHP & Latihan Mandiri Notifikasi (`notifikasi.php`)
+## 2. Implementasi PHP
 
-Pada bagian PHP, selain melengkapi `BangunDatar.php` dan `main.php` dengan kelas `Segitiga` (menggunakan rumus Heron dan validasi pertidaksamaan sisi) serta `Trapesium`, kita juga mengerjakan latihan mandiri hierarki `Notifikasi` pada berkas `notifikasi.php`.
+### 2.1. File: BangunDatar.php
+*Penjelasan Kode:*
+> Kelas abstrak `BangunDatar` pada PHP mendefinisikan kontrak hierarki geometri dengan menerapkan aturan pengetikan ketat (`declare(strict_types=1);`).
 
-* **Penerapan Polimorfisme:** Dibuat kelas abstrak `Notifikasi` dengan method abstrak `kirim(string $pesan)` dan `saluran()`.
-* **Kelas Turunan:** `Email`, `SMS`, dan `WhatsApp` mengimplementasikan method `kirim()` sesuai format kanal komunikasi masing-masing.
-* **Fungsi `kirimSemua()`:** Melakukan iterasi ke dalam daftar objek `Notifikasi[]` dan memanggil method `$notif->kirim($pesan)` secara polimorfik **tanpa** satu pun pemeriksaan tipe (`instanceof` atau `match/switch`), membuktikan bahwa pengiriman pesan bersifat fleksibel dan aman.
+*Bukti Eksekusi (Screenshot):*
+- *Before* (Kondisi awal / Galat logika):
+![SS Before BangunDatar.php](images/bangundatarphp-sebelum.png)
+
+- *After* (Kondisi akhir / Eksekusi berhasil):
+![SS After BangunDatar.php](images/bangundatarphp-setelah.png)
+
+### 2.2. File: notifikasi.php
+*Penjelasan Kode:*
+> Berkas `notifikasi.php` mengimplementasikan latihan mandiri polimorfisme berupa sistem pengiriman pesan dengan berbagai saluran komunikasi (`Email`, `SMS`, dan `WhatsApp`) yang dipanggil secara seragam tanpa pemeriksaan tipe manual.
+
+*Bukti Eksekusi (Screenshot):*
+- *Before* (Kondisi awal / Galat logika):
+![SS Before notifikasi.php](images/notifikasiphp-sebelum.png)
+
+- *After* (Kondisi akhir / Eksekusi berhasil):
+![SS After notifikasi.php](images/notifikasiphp-setelah.png)
+
+### 2.3. File: main.php
+*Penjelasan Kode:*
+> Berkas `main.php` berfungsi sebagai *driver script* utama untuk menjalankan pengujian polimorfisme pada PHP dan menampilkan hasilnya ke konsol.
+
+*Bukti Eksekusi (Screenshot):*
+- *Before* (Kondisi awal / Galat logika):
+![SS Before main.php](images/mainphp-sebelum.png)
+
+- *After* (Kondisi akhir / Eksekusi berhasil):
+![SS After main.php](images/mainphp-setelah.png)
+
+### Output
+*Output Program PHP:*
+- *Before:* ![Output PHP Sebelum](images/runningprogramphp-sebelum.png)
+- *After:* ![Output PHP Setelah](images/runningprogramphp-setelah.png)
 
 ---
 
-## E. Hasil Pengujian Program (Running)
-
-Berikut adalah bukti hasil eksekusi program uji setelah seluruh `TODO` diselesaikan:
-
-### 1. Java
-* **Sebelum Perbaikan:** 
-  > ![Screenshot Hasil Running Java Sebelum](images/runningprogramjava-sebelum.png)
-* **Sesudah Perbaikan:**
-  > ![Screenshot Hasil Running Java Setelah](images/runningprogramjava-setelah.png)
-
-### 2. PHP
-* **Sebelum Perbaikan:** 
-  > ![Screenshot Hasil Running PHP Sebelum](images/runningprogramphp-sebelum.png)
-* **Sesudah Perbaikan:**
-  > ![Screenshot Hasil Running PHP Setelah](images/runningprogramphp-setelah.png)
+## 3. Analisis Perbandingan: Anti-Pattern vs Polimorfisme Murni
+> Berdasarkan eksplorasi modul, pendekatan *anti-pattern* dengan `instanceof` memaksa pengembang mengubah banyak fungsi setiap ada penambahan entitas baru, yang rentan menimbulkan *bug*. Sebaliknya, penerapan **Polimorfisme** murni (*Open/Closed Principle*) memungkinkan penambahan kelas baru (seperti `Segitiga`, `Trapesium`, atau saluran `Notifikasi`) secara mulus tanpa menyunting kode pemanggil utama (*plug-and-play architecture*).
 
 ---
 
-## F. Kesimpulan
-Praktikum Sesi 05 ini membuktikan bahwa polimorfisme merupakan pilar vital dalam PBO untuk merancang sistem yang modular, mudah dipelihara, dan skalabel. Dengan memanfaatkan *dynamic method dispatch*, kelas induk dapat mendelegasikan eksekusi method spesifik ke kelas turunan secara otomatis. Penambahan kelas baru seperti `Segitiga` dan `Trapesium` dapat dilakukan dengan mulus tanpa merusak kode utama yang sudah ada (*plug-and-play architecture*).
+## 4. Kesimpulan
+> Praktikum Sesi 05 ini berhasil membuktikan bahwa konsep **Polimorfisme** merupakan pilar esensial dalam Pemrograman Berorientasi Objek untuk menciptakan sistem yang modular, bersih, dan mudah diskalakan. Melalui mekanisme *dynamic method dispatch*, kelas induk dapat mendelegasikan pemanggilan method spesifik langsung ke kelas turunannya secara otomatis, baik pada bahasa **Java** maupun **PHP**.
