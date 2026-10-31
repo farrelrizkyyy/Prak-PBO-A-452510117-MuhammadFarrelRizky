@@ -6,8 +6,8 @@
 | **NPM** | 4525210117 |
 | **Kelas** | A |
 | **Mata Kuliah** | Pemrograman Berbasis Objek (PBO) |
-| **Pertemuan** | Pertemuan 7 - Relasi Objek dan UML Class Diagram |
-| **Tanggal** | 15/10/2026 |
+| **Pertemuan** | Pertemuan 9 - Materi: Package, Namespace, dan Build tool |
+| **Tanggal** | 29/10/2026 |
 
 ---
 
