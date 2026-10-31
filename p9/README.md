@@ -6,56 +6,62 @@
 | **NPM** | 4525210117 |
 | **Kelas** | A |
 | **Mata Kuliah** | Pemrograman Berbasis Objek (PBO) |
-| **Pertemuan** | Pertemuan 9 - Materi: Package, Namespace, dan Build tool |
-| **Tanggal** | 29/10/2026 |
+| **Pertemuan** | Pertemuan 9 - Package, Namespace, Maven, dan Composer |
+| **Tanggal** | 31/10/2026 |
 
 ---
 
 ## 1. Implementasi Java
 
-### 1.1. File: Buku.java
+### 1.1. File: pom.xml
 
 **Penjelasan Kode:**
 
-> Kelas `Buku` merepresentasikan relasi **Komposisi** terhadap kelas internal `Bab`. Komposisi terwujud melalui tiga aturan utama: objek bagian (`Bab`) dibuat di dalam kelas `Buku` melalui method `tambahBab(int nomor, String judulBab)` (bukan menerima objek dari luar), constructor `Bab` bersifat privat agar hanya bisa diinisiasi oleh induknya, serta method `getBab()` menggunakan `List.copyOf(bab)` untuk mencegah *collection leakage* dari luar. Selain itu, terdapat validasi pada constructor untuk memastikan jumlah eksemplar tidak bernilai negatif, serta method `kurangiStok()` yang menolak pengurangan ketika stok sudah nol.
+> Berkas `pom.xml` adalah konfigurasi build Maven yang menetapkan koordinat unik proyek (`groupId`, `artifactId` bernilai `perpustakaan`, dan versi `1.0.0`), versi compiler Java 25 melalui `maven.compiler.release`, serta encoding sumber UTF-8. Dependensi eksternal yang ditambahkan adalah **Datafaker** versi `2.1.0` yang dipakai di `Main.java` untuk membuat nama mahasiswa secara acak. Selain itu, `exec-maven-plugin` dikonfigurasi dengan `mainClass` `id.ac.univpancasila.perpustakaan.Main` sehingga program cukup dijalankan dengan perintah `mvn exec:java`.
+
+**Bukti Eksekusi (Screenshot):**
+
+*Before* (Kondisi awal / Bagian TODO belum diisi):
+![SS Before pom.xml](images/pomxmlsebelum.png)
+
+*After* (Kondisi akhir / Dependensi dan plugin sudah dikonfigurasi):
+![SS After pom.xml](images/pomxmlsesudah.png)
+
+### 1.2. File: Struktur Package Maven (model, service, util)
+
+**Penjelasan Kode:**
+
+> Kode Sistem Perpustakaan dari pertemuan 7 dipindahkan ke struktur folder baku Maven, yaitu `src/main/java/id/ac/univpancasila/perpustakaan/`. Kelas dikelompokkan ke dalam sub-package `model` (`Buku`, `Jurusan`, `Anggota`), `service` (`PerpustakaanService`), dan `util` (`Format`). Baris `package` pada setiap berkas ditulis sama persis dengan jalur foldernya, misalnya `package id.ac.univpancasila.perpustakaan.model;` pada `model/Buku.java`, karena ketidakcocokan keduanya menyebabkan galat kompilasi atau `ClassNotFoundException`. Kelas antar-package kemudian dipakai melalui `import`, seperti `import id.ac.univpancasila.perpustakaan.model.*;` dan `import id.ac.univpancasila.perpustakaan.service.*;` pada `Main.java`.
+
+**Bukti Eksekusi (Screenshot):**
+
+*Before* (Kondisi awal / Kesalahan kompilasi akibat package atau import belum sesuai):
+![SS Before Struktur Package](images/packagejavasebelum.png)
+
+*After* (Kondisi akhir / Struktur folder dan package sudah sesuai):
+![SS After Struktur Package](images/packagejavasesudah.png)
+
+### 1.3. File: Main.java
+
+**Penjelasan Kode:**
+
+> Kelas `Main` berada di package `id.ac.univpancasila.perpustakaan` dan berfungsi sebagai titik masuk program. Kelas ini mengimpor kelas dari package `model` dan `service` serta pustaka eksternal `net.datafaker.Faker`. Program mendemonstrasikan relasi komposisi `Buku` dan `Bab` (termasuk penolakan perubahan koleksi bab dari luar), relasi agregasi `Jurusan` dan `Mahasiswa` (dengan nama mahasiswa dari Datafaker), pencarian dan peminjaman buku melalui `PerpustakaanService`, serta pengecekan masa keanggotaan melalui kelas `Anggota`.
 
 **Bukti Eksekusi (Screenshot):**
 
 *Before* (Kondisi awal / Kesalahan kompilasi):
-![SS Before Buku.java](images/bukusebelum.png)
+![SS Before Main.java](images/mainjavasebelum.png)
 
 *After* (Kondisi akhir / Eksekusi berhasil):
-![SS After Buku.java](images/bukusesudah.png)
-
-### 1.2. File: Jurusan.java
-
-**Penjelasan Kode:**
-
-> Kelas `Jurusan` merepresentasikan relasi **Agregasi** terhadap kelas `Mahasiswa`. Berbeda dengan komposisi, objek `Mahasiswa` diterima dari luar melalui method `daftarkan(Mahasiswa m)` dan tetap dapat hidup mandiri meskipun dikeluarkan lewat `keluarkan(Mahasiswa m)` atau objek `Jurusan` dihapus. Constructor `Mahasiswa` bersifat publik sehingga objeknya bisa dibuat di luar `Jurusan`. Validasi diterapkan untuk menolak nilai `null`, dan `getMahasiswa()` mengembalikan salinan tak-berubah melalui `List.copyOf`.
-
-**Bukti Eksekusi (Screenshot):**
-
-*Before* (Kondisi awal / Kesalahan kompilasi):
-![SS Before Jurusan.java](images/jurusanjavasebelum.png)
-
-*After* (Kondisi akhir / Eksekusi berhasil):
-![SS After Jurusan.java](images/jurusanjavasesudah.png)
-
-### 1.3. File: PerpustakaanService.java
-
-**Penjelasan Kode:**
-
-> Kelas `PerpustakaanService` berfungsi sebagai lapisan layanan (*service layer*) yang mengelola operasional sistem perpustakaan. Kelas ini menyimpan koleksi buku dalam `ArrayList<Buku>` (relasi agregasi, karena objek `Buku` dibuat di luar dan diterima melalui `tambahKoleksi`), mencari buku berdasarkan nomor induk melalui `cariKoleksi`, serta menyediakan method `pinjam` dan `kembalikan` sebagai kerangka alur peminjaman dan pengembalian buku yang akan disempurnakan pada sesi berikutnya.
-
-**Bukti Eksekusi (Screenshot):**
-
-*Before* (Kondisi awal / Kesalahan kompilasi):
-![SS Before PerpustakaanService.java](images/perpustakaanservicesebelum.png)
-
-*After* (Kondisi akhir / Eksekusi berhasil):
-![SS After PerpustakaanService.java](images/perpustakaanservicesesudah.png)
+![SS After Main.java](images/mainjavasesudah.png)
 
 ### Output
+
+**Hasil Perintah Maven:**
+
+![Output mvn clean](images/mvnclean.png)
+
+![Output mvn compile](images/mvncompile.png)
 
 **Output Program Java:**
 
@@ -65,43 +71,43 @@
 
 ## 2. Implementasi PHP
 
-### 2.1. File: Bab.php & Buku.php (Bab & Buku)
+### 2.1. File: composer.json
 
 **Penjelasan Kode:**
 
-> Kelas `Buku` dan `Bab` pada PHP menerapkan konsep komposisi serupa dengan Java. Karena PHP tidak mendukung *nested class*, disiplin komposisi dijaga melalui konvensi perancangan: objek `Bab` hanya dibuat di dalam method `Buku::tambahBab()`, constructor `Bab` memakai properti `readonly` sehingga tidak dapat diubah setelah dibuat, dan larik objek `Bab` dienkapsulasi sebagai properti `private` di dalam `Buku`. Validasi parameter juga disematkan untuk mencegah nilai eksemplar negatif (pada `Buku`) serta nomor bab dan judul bab yang tidak valid (pada `Bab`).
+> Berkas `composer.json` menetapkan kebutuhan proyek, yaitu PHP `^8.5.12` dan pustaka **Carbon** (`nesbot/carbon` `^3.15`) untuk mengolah tanggal. Pemetaan `autoload.psr-4` dengan isi `"Perpustakaan\\": "src/"` mengaktifkan autoload PSR-4 sehingga namespace `Perpustakaan\` menunjuk ke folder `src/`. Backslash pada JSON ditulis ganda. Pemetaan `autoload-dev.psr-4` untuk `Perpustakaan\\Tests\\` ke `tests/` disiapkan untuk kode pengujian pada pertemuan berikutnya, dan berkas `composer.lock` dipertahankan agar versi dependensi konsisten.
 
 **Bukti Eksekusi (Screenshot):**
 
-*Before* (Kondisi awal / Galat logika):
-![SS Before Buku.php (Buku)](images/relasibab&bukusebelum.png)
+*Before* (Kondisi awal / Pemetaan autoload masih kosong):
+![SS Before composer.json](images/composersebelum.png)
 
-*After* (Kondisi akhir / Eksekusi berhasil):
-![SS After Buku.php (Buku)](images/relasibab&bukusesudah.png)
+*After* (Kondisi akhir / Autoload PSR-4 dan dependensi sudah terisi):
+![SS After composer.json](images/composersesudah.png)
 
-### 2.2. File: Jurusan.php & Mahasiswa.php (Jurusan & Mahasiswa)
+### 2.2. File: Namespace pada src/Model dan src/Service
 
 **Penjelasan Kode:**
 
-> Kelas `Jurusan` dan `Mahasiswa` pada PHP mengimplementasikan relasi **Agregasi**. Objek `Mahasiswa` diinjeksikan dari luar ke dalam larik koleksi jurusan melalui method `daftarkan()` (dengan pencegahan duplikasi menggunakan `in_array` mode strict) dan dapat dikeluarkan melalui `keluarkan()` tanpa menghancurkan eksistensi objek mahasiswa di luar lingkup jurusan tersebut.
+> Seluruh kelas PHP dipindahkan ke folder `src/` dan diberi namespace sesuai lokasi foldernya: `Perpustakaan\Model` untuk `Buku`, `Bab`, `Jurusan`, `Mahasiswa`, dan `Anggota`, serta `Perpustakaan\Service` untuk `PerpustakaanService`. Dengan autoload PSR-4, `Perpustakaan\Model\Buku` otomatis dipetakan ke `src/Model/Buku.php`, sehingga seluruh `require_once` tidak diperlukan lagi. Nama folder ditulis persis seperti namespace-nya (huruf besar-kecil) agar tetap berjalan di server Linux. Kelas `Anggota` memakai Carbon untuk memeriksa masa keanggotaan maksimal 3 tahun.
 
 **Bukti Eksekusi (Screenshot):**
 
-*Before* (Kondisi awal / Galat logika):
-![SS Before Jurusan.php (Jurusan)](images/relasijurusan&mahasiswasebelum.png)
+*Before* (Kondisi awal / Galat kelas tidak ditemukan):
+![SS Before Namespace PHP](images/namespacephpsebelum.png)
 
-*After* (Kondisi akhir / Eksekusi berhasil):
-![SS After Jurusan.php (Jurusan)](images/relasijurusan&mahasiswasesudah.png)
+*After* (Kondisi akhir / Kelas termuat otomatis melalui autoload):
+![SS After Namespace PHP](images/namespacephpsesudah.png)
 
 ### 2.3. File: main.php
 
 **Penjelasan Kode:**
 
-> Berkas `main.php` berfungsi sebagai titik masuk eksekusi utama (*entry point*) untuk menguji hasil implementasi kelas-kelas berbasis PHP. Berkas ini memuat `vendor/autoload.php` (autoload PSR-4 dari Composer, dengan pemetaan namespace `Perpustakaan\` ke folder `src/`) dan memakai pustaka `nesbot/carbon` untuk menghitung tanggal jatuh tempo, sehingga relasi komposisi dan agregasi dapat diuji sesuai dengan rancangan spesifikasi sistem.
+> Berkas `main.php` berfungsi sebagai titik masuk eksekusi utama (*entry point*) PHP. Berkas ini hanya memuat satu baris `require __DIR__ . '/vendor/autoload.php';`, lalu menggunakan kelas melalui pernyataan `use` seperti `Perpustakaan\Model\Buku` dan `Carbon\Carbon`. Program menguji relasi komposisi dan agregasi, perubahan stok sebelum dan sesudah peminjaman, perhitungan tanggal jatuh tempo 14 hari menggunakan Carbon, serta status keanggotaan.
 
 **Bukti Eksekusi (Screenshot):**
 
-*Before* (Kondisi awal / Galat logika):
+*Before* (Kondisi awal / Galat autoload):
 ![SS Before main.php](images/mainphpsebelum.png)
 
 *After* (Kondisi akhir / Eksekusi berhasil):
@@ -109,36 +115,18 @@
 
 ### Output
 
+**Hasil Perintah Composer:**
+
+![Output composer validate](images/composervalidate.png)
+
+![Output composer install](images/composerinstall.png)
+
 **Output Program PHP:**
 
 ![Output PHP](images/runningprogramphp.png)
 
 ---
 
-## 3. Class Diagram
+## 3. Kesimpulan
 
-### 3.1. File: perpustakaan-kerangka.puml (Class Diagram Sistem Perpustakaan)
-
-**Penjelasan Kode:**
-
-> Berkas `perpustakaan-kerangka.puml` adalah kerangka dasar perancangan class diagram Sistem Perpustakaan yang dikembangkan secara bertahap. Berkas ini mendefinisikan struktur paket `model` (mencakup kelas abstrak `Koleksi`, `Buku`, `Bab`, `Anggota`, `Peminjaman`, serta enumerasi status dan jenis keanggotaan) dan paket `service` (`PerpustakaanService`), yang kemudian dilengkapi dengan notasi derajat keterikatan (*multiplicity* serta relasi komposisi dan agregasi).
-
-**Bukti Eksekusi (Screenshot):**
-
-*Before* (Kondisi awal / Berkas kerangka asli dengan bagian TODO):
-![SS Before perpustakaan-kerangka.puml](images/perpustakaankerangkasebelum.png)
-
-*After* (Kondisi akhir / Berkas kerangka yang telah dilengkapi seluruh kelas dan relasinya):
-![SS After perpustakaan-kerangka.puml](images/perpustakaankerangkasesudah.png)
-
-### Output
-
-**Output Render Diagram Kerangka Class:**
-
-![Output Kerangka Class Diagram](images/runninguml.png)
-
----
-
-## 4. Kesimpulan
-
-> Praktikum Pertemuan 7 ini berhasil membuktikan pemahaman mendalam mengenai pemodelan objek dan perbedaannya secara struktural di dalam kode pemrograman (Java dan PHP). Relasi **Komposisi** (seperti `Buku` dan `Bab`) menuntut objek bagian dibuat di dalam induk dan dilindungi dari modifikasi luar (*collection leakage*), di mana objek bagian akan musnah bersama induknya. Sebaliknya, relasi **Agregasi** (seperti `Jurusan` dan `Mahasiswa`) memperbolehkan objek bagian hidup secara mandiri meskipun dilepas dari objek induknya. Penerapan *multiplicity* dan diagram UML (`usecase`, `class`, dan `sequence`) juga memperjelas batasan serta aturan bisnis dari Sistem Perpustakaan. Selain itu, penggunaan Maven (Java) dan Composer (PHP) dengan struktur paket/namespace yang baku membuat kode lebih terorganisasi dan dependensi eksternal (`datafaker`, `carbon`) dapat dikelola secara otomatis.
+> Praktikum Pertemuan 9 ini berhasil menerapkan pengelolaan struktur proyek dan dependensi pada Java dan PHP. Pada Java, kode ditata dalam struktur folder baku Maven dengan package domain terbalik `id.ac.univpancasila.perpustakaan`, di mana deklarasi `package` harus sama persis dengan jalur folder dan antar-package dihubungkan melalui `import`. Pada PHP, namespace `Perpustakaan` dipetakan ke folder `src/` melalui autoload PSR-4 Composer sehingga kelas termuat otomatis tanpa `require_once`. Maven (`pom.xml`) dan Composer (`composer.json` serta `composer.lock`) mengelola dependensi eksternal, yaitu Datafaker pada Java dan Carbon pada PHP, sehingga proyek dapat dibangun dan dijalankan ulang dengan langkah yang terukur di perangkat lain.
