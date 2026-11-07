@@ -129,4 +129,8 @@
 
 ## 3. Kesimpulan
 
+<<<<<<< HEAD
 > Praktikum Pertemuan 9 ini berhasil menerapkan pengelolaan struktur proyek dan dependensi pada Java dan PHP. Pada Java, kode ditata dalam struktur folder baku Maven dengan package domain terbalik `id.ac.univpancasila.perpustakaan`, di mana deklarasi `package` harus sama persis dengan jalur folder dan antar-package dihubungkan melalui `import`. Pada PHP, namespace `Perpustakaan` dipetakan ke folder `src/` melalui autoload PSR-4 Composer sehingga kelas termuat otomatis tanpa `require_once`. Maven (`pom.xml`) dan Composer (`composer.json` serta `composer.lock`) mengelola dependensi eksternal, yaitu Datafaker pada Java dan Carbon pada PHP, sehingga proyek dapat dibangun dan dijalankan ulang dengan langkah yang terukur di perangkat lain.
+=======
+> Praktikum Pertemuan 9 ini berhasil menerapkan pengelolaan struktur proyek dan dependensi pada Java dan PHP. Pada Java, kode ditata dalam struktur folder baku Maven dengan package domain terbalik `id.ac.univpancasila.perpustakaan`, di mana deklarasi `package` harus sama persis dengan jalur folder dan antar-package dihubungkan melalui `import`. Pada PHP, namespace `Perpustakaan` dipetakan ke folder `src/` melalui autoload PSR-4 Composer sehingga kelas termuat otomatis tanpa `require_once`. Maven (`pom.xml`) dan Composer (`composer.json` serta `composer.lock`) mengelola dependensi eksternal, yaitu Datafaker pada Java dan Carbon pada PHP, sehingga proyek dapat dibangun dan dijalankan ulang dengan langkah yang terukur di perangkat lain.
+>>>>>>> 2140e2b (update tugas)
