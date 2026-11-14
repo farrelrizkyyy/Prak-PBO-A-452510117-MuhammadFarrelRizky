@@ -13,9 +13,19 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <dependencies>
+        <!-- Sesi 11: JUnit 5. scope=test -> tidak ikut ke .jar produksi -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.11.3</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
     <build>
-        <!-- titik = folder tempat pom.xml ini berada (folder java) -->
-        <sourceDirectory>.</sourceDirectory>
+        <!-- Sesi 11: <sourceDirectory>.</sourceDirectory> DIHAPUS. Layout standar Maven:
+             src/main/java untuk kode, src/test/java untuk uji. -->
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -26,6 +36,11 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.5.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.5.2</version>
             </plugin>
         </plugins>
     </build>

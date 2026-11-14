@@ -33,56 +33,61 @@ final class KoleksiBuku implements IteratorAggregate, Countable
         }
     }
 
-    /** TODO 1: simpan buku dengan kunci ISBN-nya. */
+    /** Menyimpan buku dengan kunci nomor induk (ISBN). Kunci sama menimpa. */
     public function simpan(Buku $b): void
     {
+        $this->items[$b->getNomorInduk()] = $b;
     }
 
-    /** TODO 2: kembalikan Buku atau null. Perhatikan tipe kembaliannya: ?Buku */
+    /** Buku atau null. */
     public function cariByIsbn(string $isbn): ?Buku
     {
-        return null;   // ganti
+        return $this->items[$isbn] ?? null;
     }
 
     /** @return Buku[] */
     public function semua(): array { return array_values($this->items); }
 
     /**
-     * TODO 3: kembalikan KoleksiBuku baru berisi item yang lolos predikat.
-     *         PERHATIAN: array_filter(array, callable) — array DULU.
-     *         Jangan lupa array_values agar indeksnya tidak berlubang.
+     * KoleksiBuku baru berisi item yang lolos predikat.
+     * array_filter(array, callable) — array DULU. array_values agar indeks rapat.
      */
     public function filter(callable $predikat): self
     {
-        return new self();   // ganti
+        return new self(array_values(array_filter($this->items, $predikat)));
     }
 
     /**
-     * TODO 4: kembalikan larik hasil pemetaan.
-     *         PERHATIAN: array_map(callable, array) — callable DULU.
-     *         Urutan argumennya BERBEDA dari array_filter. Ini sumber
-     *         kesalahan yang sangat sering terjadi.
+     * array_map(callable, array) — callable DULU (kebalikan array_filter).
      *
      * @return mixed[]
      */
     public function map(callable $f): array
     {
-        return [];   // ganti
+        return array_map($f, array_values($this->items));
     }
 
-    /** TODO 5: jumlahkan hasil $f atas seluruh item. Petunjuk: array_reduce */
+    /** Jumlahkan hasil $f atas seluruh item. */
     public function jumlahkan(callable $f): float
     {
-        return 0.0;   // ganti
+        return array_reduce(
+            $this->items,
+            fn(float $total, Buku $b) => $total + $f($b),
+            0.0
+        );
     }
 
     /**
-     * TODO 6: kelompokkan item berdasarkan kunci hasil $kunci($buku).
+     * Kelompokkan item berdasarkan kunci hasil $kunci($buku).
      * @return array<string,Buku[]>
      */
     public function kelompokkan(callable $kunci): array
     {
-        return [];   // ganti
+        $hasil = [];
+        foreach ($this->items as $b) {
+            $hasil[$kunci($b)][] = $b;
+        }
+        return $hasil;
     }
 
     public function getIterator(): ArrayIterator
